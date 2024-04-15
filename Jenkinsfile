@@ -40,7 +40,7 @@ pipeline {
         
         stage('Send slack Message') {
             steps {
-                 Send slack message when deployment is successful
+                 //Send slack message when deployment is successful
                  slackSend color: 'good', message: 'Deployment successful. Build ID:  85cb931:, Link to Render - https://java-todo-99ii.onrender.com/'
             }
         }
