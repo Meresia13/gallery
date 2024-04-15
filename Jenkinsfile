@@ -1,55 +1,47 @@
 pipeline {
     agent any
+    
     tools {
-        gradle 'gradle'
-        git 'git'
+        // Define Node.js tool installation.
         nodejs 'nodejs'
     }
+    
     stages {
-        stage("Clone Code") {
+        stage('Clone Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/Meresia13/java-todo.git'
+                // Trigger the pipeline automatically on new changes
+                git branch: 'master', url: 'https://github.com/Meresia13/gallery'
+                
+                // Install required software and dependencies
+                sh 'npm install'
             }
         }
         
-        stage('Build Code') {
+        stage('Build') {
             steps {
-                sh 'gradle build'
+                // Run the build command specified in Jenkinsfile
+                sh 'npm run'
             }
         }
         
-        stage('Test Code') {
+        stage('Run Tests') {
             steps {
-                sh 'gradle test'
-            }
-        }
-        
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // Install Node.js dependencies using npm
-                    sh 'npm install'
-                    // Install the express module
-                    sh 'npm install express --save'
-                }
-            }
-        }
-        
-        stage('Start Node.js Server') {
-            steps {
-                script {
-                    // Start the Node.js server
-                    sh 'node server.js &'
-                    // The '&' at the end runs the command in the background
-                    // so that the Jenkins job doesn't wait for the server to finish
-                }
+                // Run npm test command
+                sh 'npm test'
             }
         }
         
         stage('Deploy to Render') {
             steps {
-            // Use curl to trigger deployment using Deploy Hook URL
-            sh 'curl -X POST -d "" https://api.render.com/deploy/srv-codm1igl6cac73bmhod0?key=28xNlHQYJ38'
+                // Deploy to Render
+                sh 'curl -X POST -d "" https://api.render.com/deploy/srv-codm1igl6cac73bmhod0?key=28xNlHQYJ38'
+            }
+        }
+        
+        stage('Send slack Message') {
+            steps {
+                 Send slack message when deployment is successful
+                 slackSend color: 'good', message: 'Deployment successful. Build ID:  85cb931:, Link to Render - https://java-todo-99ii.onrender.com/'
             }
         }
     }
