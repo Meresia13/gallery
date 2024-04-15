@@ -4,6 +4,7 @@ pipeline {
     tools {
         // Define Node.js tool installation.
         nodejs 'nodejs'
+        git 'git'
     }
     
     stages {
@@ -40,9 +41,18 @@ pipeline {
         
         stage('Send slack Message') {
             steps {
-                 //Send slack message when deployment is successful
-                 slackSend color: 'good', message: 'Deployment successful. Build ID:  85cb931:, Link to Render - https://java-todo-99ii.onrender.com/'
+                 // Send slack message when deployment is successful
+                 //slackSend color: 'good', message: 'Deployment successful. Build ID:  85cb931:, Link to Render - https://java-todo-99ii.onrender.com/'
             }
+        }
+    }
+    
+    post {
+        failure {
+            // Send email notification if any stage fails
+            emailext subject: 'Pipeline Failed',
+                      body: "The pipeline gallery failed. Please check the logs for details.",
+                      to: 'melisaopiyo@gmailcom'
         }
     }
 }
